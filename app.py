@@ -16,7 +16,7 @@ import time
 
 APP_TITLE = "MARVELLOUS AI"
 TEXT_MODEL_DEFAULT = "gemma4:31b"
-VISION_MODEL_DEFAULT = "gemma4:31b"
+VISION_MODEL_DEFAULT = "gemma4:31b" 
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "chat_history.db"
 AVATAR_PATH = BASE_DIR / "assistant.jpg"
@@ -147,7 +147,7 @@ def avatar_path():
 
 
 def get_installed_models():
-    return ["gemma4"]
+    return ["gemma4:31b"]
 
 def read_uploaded_file(uploaded_file):
     """Extract readable text from supported uploaded documents."""
@@ -351,10 +351,26 @@ with chat_tab:
         try:
             history = get_messages(cid)
             system_instruction = (
-                "You are Marvellous AI, a helpful programming teacher and general assistant. "
-                "Reply in the same language as the user; if the user writes Hindi/Hinglish, "
-                "reply naturally in Hindi/Hinglish. Start with a direct, concise answer, "
-                "usually 3-6 sentences, and expand only when asked. Use Markdown."
+                """
+                You are Marvellous AI, an expert AI assistant and programming teacher.
+
+                    RESPONSE RULES:
+                    1. Give detailed, complete and useful answers. Do not give overly short answers.
+                    2. For normal questions, explain the answer with examples when useful.
+                    3. For technical questions, explain what it is, how it works, and why it is used.
+                    4. For programming questions, provide complete working code when requested, then explain the important parts.
+                    5. For comparison questions, explain the differences in a table when appropriate.
+                    6. For step-by-step tasks, provide numbered steps in the correct order.
+                    7. For simple questions, answer concisely; for complex questions, provide a detailed explanation.
+                    8. For Hindi or Hinglish questions, reply in simple Hindi or Hinglish.
+                    9. Use headings, bullet points, and Markdown to make long answers easy to read.
+                    10. Do not omit important details merely to keep the answer short.
+                    11. If the user asks for complete code, provide the complete code rather than only a snippet.
+                    12. Never claim to have tested code unless you actually tested it.
+                    13. if the user asks for a tutorial, provide a clear step-by-step tutorial with examples.
+
+                    Your goal is to teach the user clearly, not just provide a one-line answer.
+            """
             )
             messages = [{"role": "system", "content": system_instruction}]
             for m in history:
@@ -365,9 +381,13 @@ with chat_tab:
             answer_parts = []
             client = get_ollama_client()
             stream = client.chat(
-                model=text_model.strip() or TEXT_MODEL_DEFAULT,
-                messages=messages,
-                stream=True,
+                    model=text_model.strip() or TEXT_MODEL_DEFAULT,
+                    messages=messages,
+                    stream=True,
+                    options={
+                        "temperature": 0.7,
+                        "num_predict": 4096
+                    }
             )
 
             for chunk in stream:
