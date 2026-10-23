@@ -15,8 +15,8 @@ import time
 # pip install pypdf pandas pillow
 
 APP_TITLE = "MARVELLOUS AI"
-TEXT_MODEL_DEFAULT = "gemma4"
-VISION_MODEL_DEFAULT = "gemma4"
+TEXT_MODEL_DEFAULT = "gemma4:31b"
+VISION_MODEL_DEFAULT = "gemma4:31b"
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "chat_history.db"
 AVATAR_PATH = BASE_DIR / "assistant.jpg"
